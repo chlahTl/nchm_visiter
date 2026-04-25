@@ -1,23 +1,42 @@
 /**
  * ==================== nchm.js 파일 설명 ====================
  * 이 파일은 시흥시능곡청소년문화의집 통합 서비스의 모든 동작을 관리합니다.
- * 
+ * Firebase Realtime Database와 연동하여 데이터를 저장합니다.
+ *
  * 수정 규칙:
  * 1. 비밀번호 변경 가능 (현재: 9806)
  * 2. 데이터 저장 구조(AGE_GROUPS, PURPOSES)는 표준을 따르세요
  * 3. HTML 요소 ID명 변경 금지 (nchm.html과 연동)
- * 4. localStorage 키명 변경 금지 (데이터 손실 발생)
- * 5. 스타일 수정은 nchm.css에서만 처리
+ * 4. 스타일 수정은 nchm.css에서만 처리
  * ==========================================================
  */
 
+/* ==================== Firebase 초기화 ==================== */
+
+// Firebase SDK를 CDN으로 불러옵니다 (nchm.html <head>에 추가 필요 - 아래 주석 참고)
+// <script type="module"> 방식 대신 compat 버전을 사용합니다 (기존 코드와 호환)
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDm2x9BtBynGBJYZ56eNjoAMH3fxIGdyyw",
+    authDomain: "nchm-131bb.firebaseapp.com",
+    databaseURL: "https://nchm-131bb-default-rtdb.firebaseio.com",
+    projectId: "nchm-131bb",
+    storageBucket: "nchm-131bb.firebasestorage.app",
+    messagingSenderId: "592225829882",
+    appId: "1:592225829882:web:92942c947bbc498926da43",
+    measurementId: "G-W0YLVVCQ9R"
+};
+
+// Firebase 앱 초기화
+firebase.initializeApp(firebaseConfig);
+
+// Realtime Database 참조
+const db = firebase.database();
+const visitLogsRef = db.ref("visitLogs");
+const arLogsRef = db.ref("arLogs");
+
 /* ==================== 전역 상수 및 변수 ==================== */
 
-/**
- * 연령대 분류
- * 방문 등록과 AR 예약에서 사용되는 표준 연령대 목록
- * 순서: 초등 → 중등 → 고등 → 청년 → 청년 → 유아 → 성인
- */
 const AGE_GROUPS = [
     "초등(9~13세)",
     "중등(14~16세)",
@@ -28,27 +47,39 @@ const AGE_GROUPS = [
     "성인(40세 이상)"
 ];
 
-/**
- * 이용 목적 분류
- * 방문 등록에서 선택 가능한 활동 목적 목록
- */
 const PURPOSES = ["휴식", "독서", "보드게임", "탁구", "스터디룸"];
 
-// 방문 등록 데이터 배열 (localStorage에서 불러옴)
-let visitLogs = JSON.parse(localStorage.getItem("visitLogs")) || [];
+// 메모리에 올려둔 데이터 (Firebase에서 실시간으로 받아옴)
+let visitLogs = [];
+let arLogs = [];
 
-// AR 예약 데이터 배열 (localStorage에서 불러옴)
-let arLogs = JSON.parse(localStorage.getItem("arLogs")) || [];
-
-// 현재 필터 상태 (all, month, custom)
+// 현재 필터 상태
 let currentFilter = "all";
+
+/* ==================== Firebase 데이터 불러오기 ==================== */
+
+/**
+ * Firebase에서 방문 등록 데이터를 실시간으로 구독합니다.
+ * 데이터가 바뀔 때마다 자동으로 visitLogs를 업데이트합니다.
+ */
+function initFirebaseListeners() {
+    visitLogsRef.on("value", (snapshot) => {
+        visitLogs = [];
+        snapshot.forEach((child) => {
+            visitLogs.push({ _key: child.key, ...child.val() });
+        });
+    });
+
+    arLogsRef.on("value", (snapshot) => {
+        arLogs = [];
+        snapshot.forEach((child) => {
+            arLogs.push({ _key: child.key, ...child.val() });
+        });
+    });
+}
 
 /* ==================== 유틸리티 함수 ==================== */
 
-/**
- * Lucide 아이콘 라이브러리 새로고침
- * DOM이 변경될 때마다 호출하여 새로운 아이콘을 렌더링합니다.
- */
 function refreshIcons() {
     if (window.lucide) {
         lucide.createIcons();
@@ -56,24 +87,23 @@ function refreshIcons() {
 }
 
 /**
- * localStorage에 데이터 저장
- * visitLogs와 arLogs 배열을 JSON 형식으로 저장
+ * Firebase에 방문 등록 데이터 저장
  */
-function saveData() {
-    localStorage.setItem("visitLogs", JSON.stringify(visitLogs));
-    localStorage.setItem("arLogs", JSON.stringify(arLogs));
+function saveVisitLog(logData) {
+    return visitLogsRef.push(logData);
 }
 
 /**
- * 화면 상단에 알림 메시지 표시
- * @param {string} msg - 표시할 메시지
+ * Firebase에 AR 예약 데이터 저장
  */
+function saveArLog(logData) {
+    return arLogsRef.push(logData);
+}
+
 function showMessage(msg) {
     const box = document.getElementById("custom-alert");
     box.innerText = msg;
     box.style.display = "block";
-
-    // 2초 후 자동으로 숨김
     setTimeout(() => {
         box.style.display = "none";
     }, 2000);
@@ -81,18 +111,12 @@ function showMessage(msg) {
 
 /* ==================== 관리자 인증 함수 ==================== */
 
-/**
- * 관리자 비밀번호 입력 모달 열기
- */
 function openPasswordModal() {
     document.getElementById("password-modal").classList.remove("hidden");
     document.getElementById("admin-password-input").value = "";
     document.getElementById("admin-password-input").focus();
 }
 
-/**
- * 관리자 비밀번호 입력 모달 닫기
- */
 function closePasswordModal() {
     document.getElementById("password-modal").classList.add("hidden");
 }
@@ -103,23 +127,16 @@ function closePasswordModal() {
  */
 function verifyAdminPassword() {
     const inputPassword = document.getElementById("admin-password-input").value;
-    
     if (inputPassword === "9806") {
-        // 비밀번호 정확함 → 관리자 모드 진입
         enterAdminMode();
         closePasswordModal();
     } else {
-        // 비밀번호 오류 → 알림 표시 후 초기화
         showMessage("비밀번호가 틀렸습니다.");
         document.getElementById("admin-password-input").value = "";
         document.getElementById("admin-password-input").focus();
     }
 }
 
-/**
- * 관리자 모드 진입
- * UI를 관리자 대시보드로 변경하고 통계 업데이트
- */
 function enterAdminMode() {
     document.body.className = "pb-10 theme-admin";
     document.getElementById("main-tabs").classList.add("hidden");
@@ -133,9 +150,6 @@ function enterAdminMode() {
     updateAdminDashboard();
 }
 
-/**
- * 관리자 모드 종료
- */
 function exitAdmin() {
     document.getElementById("main-content-container").classList.replace("max-w-6xl", "max-w-xl");
     document.getElementById("admin-tabs").classList.add("hidden");
@@ -147,12 +161,7 @@ function exitAdmin() {
 
 /* ==================== 탭 전환 함수 ==================== */
 
-/**
- * 메인 탭 전환 (방문 등록 ↔ AR 예약)
- * @param {string} type - 'visit' 또는 'ar'
- */
 function switchTab(type) {
-    // 모든 탭 버튼 초기화
     document.getElementById("tab-visit").className = "tab-btn font-bold";
     document.getElementById("tab-ar").className = "tab-btn font-bold";
     document.getElementById("main-tabs").classList.remove("hidden");
@@ -160,23 +169,17 @@ function switchTab(type) {
     document.getElementById("section-ar").classList.add("hidden");
 
     if (type === "visit") {
-        // 방문 등록 탭 활성화
         document.body.className = "pb-10 theme-visit";
         document.getElementById("section-visit").classList.remove("hidden");
         document.getElementById("tab-visit").classList.add("active-visit");
     } else {
-        // AR 예약 탭 활성화
         document.body.className = "pb-10 theme-ar";
         document.getElementById("section-ar").classList.remove("hidden");
         document.getElementById("tab-ar").classList.add("active-ar");
-        generateTimeSlots(); // 시간대 버튼 생성
+        generateTimeSlots();
     }
 }
 
-/**
- * 관리자 서브 탭 전환 (방문 등록 내역 ↔ AR 예약 현황)
- * @param {string} tab - 'visit-logs' 또는 'ar-logs'
- */
 function switchAdminSubTab(tab) {
     document.getElementById("admin-visit-logs").classList.add("hidden");
     document.getElementById("admin-ar-logs").classList.add("hidden");
@@ -194,11 +197,9 @@ function switchAdminSubTab(tab) {
 
 function selectBtn(el, group) {
     if (el.classList.contains("disabled")) return;
-
     document.querySelectorAll("." + group).forEach((button) => {
         button.classList.remove("active");
     });
-
     el.classList.add("active");
 }
 
@@ -206,18 +207,8 @@ function togglePurpose(el) {
     el.classList.toggle("active");
 }
 
-/*
-    AR 예약 이용자 카드 추가
-    건드려도 되는 것:
-    - 입력창 placeholder
-    - 버튼 문구
-    - 카드 내부 구조
+/* ==================== AR 예약 이용자 카드 ==================== */
 
-    건드리지 말아야 하는 것:
-    - .ar-user-card 클래스명
-    - input/select/button 구조의 기본 흐름
-    - 마지막의 refreshIcons() 호출
-*/
 function addUserForm() {
     const container = document.getElementById("ar-user-container");
     const div = document.createElement("div");
@@ -248,13 +239,13 @@ function addUserForm() {
 
 function selectGender(btn) {
     const parent = btn.parentElement;
-
     parent.querySelectorAll("button").forEach((button) => {
         button.className = "flex-1 py-2.5 text-sm font-bold text-slate-400";
     });
-
     btn.className = "flex-1 py-2.5 bg-white rounded-xl text-sm font-bold shadow-sm";
 }
+
+/* ==================== 시간대 버튼 생성 ==================== */
 
 function generateTimeSlots() {
     const container = document.getElementById("time-container");
@@ -276,7 +267,6 @@ function generateTimeSlots() {
 
         for (let h = 10; h < 18; h += 1) {
             if (h === 12) continue;
-
             ["00", "30"].forEach((m) => {
                 addTimeBtn(container, h, m, reservedSlots);
             });
@@ -287,7 +277,6 @@ function generateTimeSlots() {
 
         for (let h = 10; h <= 20; h += 1) {
             if (h === 12) continue;
-
             ["00", "30"].forEach((m) => {
                 if (h === 20 && m === "30") return;
                 addTimeBtn(container, h, m, reservedSlots);
@@ -323,6 +312,8 @@ function addTimeBtn(container, h, m, reservedSlots) {
     container.appendChild(btn);
 }
 
+/* ==================== 필터 함수 ==================== */
+
 function setFilter(type) {
     currentFilter = type;
 
@@ -337,7 +328,6 @@ function setFilter(type) {
     }
 
     const customDateBox = document.getElementById("custom-date-inputs");
-
     if (type === "custom") {
         customDateBox.classList.remove("hidden");
     } else {
@@ -363,18 +353,17 @@ function isDateInRange(dateStr) {
     if (currentFilter === "custom") {
         const start = document.getElementById("start-date").value;
         const end = document.getElementById("end-date").value;
-
         if (!start || !end) return true;
-
         const startDate = new Date(start);
         const endDate = new Date(end);
         endDate.setHours(23, 59, 59);
-
         return targetDate >= startDate && targetDate <= endDate;
     }
 
     return true;
 }
+
+/* ==================== 통계 테이블 렌더링 ==================== */
 
 function renderStatsTable(data, categories, targetBodyId, targetFooterId, themeClass) {
     const body = document.getElementById(targetBodyId);
@@ -424,9 +413,7 @@ function renderStatsTable(data, categories, targetBodyId, targetFooterId, themeC
     AGE_GROUPS.forEach((age, idx) => {
         const male = ageGenderTotals[age]["남"];
         const female = ageGenderTotals[age]["여"];
-
         footer.innerHTML += `<td>${male}</td><td>${female}</td>`;
-
         const sum = male + female;
         if (idx < 3) footerYouth += sum;
         if (idx >= 3 && idx <= 4) footerYoung += sum;
@@ -435,6 +422,8 @@ function renderStatsTable(data, categories, targetBodyId, targetFooterId, themeC
     const finalClass = themeClass === "sum-col" ? "final-total-visit" : "final-total-ar";
     footer.innerHTML += `<td>${footerYouth}</td><td>${footerYoung}</td><td class="${finalClass}">${grandTotal}</td>`;
 }
+
+/* ==================== 관리자 대시보드 업데이트 ==================== */
 
 function updateAdminDashboard() {
     const filteredVisitLogs = visitLogs.filter((log) => isDateInRange(log.date));
@@ -532,6 +521,8 @@ function updateAdminDashboard() {
     document.getElementById("ar-count-badge").innerText = filteredArLogs.length + "건";
 }
 
+/* ==================== 폼 제출 (Firebase 저장) ==================== */
+
 function submitForm(type) {
     const now = new Date();
     const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, "0")}`;
@@ -548,14 +539,21 @@ function submitForm(type) {
             return;
         }
 
-        visitLogs.push({ date: dateStr, time: timeStr, name, gender, age, purposes });
-        saveData();
-        alert("방문 등록이 완료되었습니다!");
+        const logData = { date: dateStr, time: timeStr, name, gender, age, purposes };
 
-        document.getElementById("v-name-input").value = "";
-        document.querySelectorAll(".v-gender, .v-age, .v-purpose").forEach((button) => {
-            button.classList.remove("active");
-        });
+        // ✅ Firebase에 저장
+        saveVisitLog(logData)
+            .then(() => {
+                alert("방문 등록이 완료되었습니다!");
+                document.getElementById("v-name-input").value = "";
+                document.querySelectorAll(".v-gender, .v-age, .v-purpose").forEach((button) => {
+                    button.classList.remove("active");
+                });
+            })
+            .catch((err) => {
+                alert("저장 중 오류가 발생했습니다: " + err.message);
+            });
+
     } else {
         const timeSlot = document.querySelector(".time-slot-btn.active")?.querySelector("span")?.innerText;
 
@@ -566,7 +564,6 @@ function submitForm(type) {
 
         const users = Array.from(document.querySelectorAll(".ar-user-card")).map((card) => {
             const genderBtn = Array.from(card.querySelectorAll("button")).find((button) => button.classList.contains("bg-white"));
-
             return {
                 name: card.querySelector("input").value.trim(),
                 gender: genderBtn ? genderBtn.innerText.trim() : "남",
@@ -579,19 +576,26 @@ function submitForm(type) {
             return;
         }
 
-        arLogs.push({ date: dateStr, timeSlot, users });
-        saveData();
-        alert("AR 예약이 신청되었습니다!");
+        const logData = { date: dateStr, timeSlot, users };
 
-        document.getElementById("ar-user-container").innerHTML = "";
-        document.querySelectorAll(".time-slot-btn").forEach((button) => {
-            button.classList.remove("active");
-        });
-
-        addUserForm();
-        generateTimeSlots();
+        // ✅ Firebase에 저장
+        saveArLog(logData)
+            .then(() => {
+                alert("AR 예약이 신청되었습니다!");
+                document.getElementById("ar-user-container").innerHTML = "";
+                document.querySelectorAll(".time-slot-btn").forEach((button) => {
+                    button.classList.remove("active");
+                });
+                addUserForm();
+                generateTimeSlots();
+            })
+            .catch((err) => {
+                alert("저장 중 오류가 발생했습니다: " + err.message);
+            });
     }
 }
+
+/* ==================== 엑셀 다운로드 ==================== */
 
 function exportToExcel(type) {
     let csvContent = "\uFEFF";
@@ -603,12 +607,10 @@ function exportToExcel(type) {
             alert("데이터가 없습니다.");
             return;
         }
-
         csvContent += "날짜,시간,이름,성별,나이,이용목적\n";
         filtered.forEach((log) => {
             csvContent += `${log.date},${log.time},${log.name},${log.gender},${log.age.split("(")[0]},"${log.purposes.join(", ")}"\n`;
         });
-
         fileName = `방문등록_${new Date().toISOString().split("T")[0]}.csv`;
     } else {
         const filtered = arLogs.filter((log) => isDateInRange(log.date));
@@ -616,24 +618,23 @@ function exportToExcel(type) {
             alert("데이터가 없습니다.");
             return;
         }
-
         csvContent += "예약날짜,예약시간,대표자,총인원,이용자상세\n";
         filtered.forEach((log) => {
             const details = log.users.map((user) => `${user.name}(${user.gender}/${user.age.split("(")[0]})`).join(" | ");
             csvContent += `${log.date},${log.timeSlot},${log.users[0].name},${log.users.length},"${details}"\n`;
         });
-
         fileName = `AR예약_${new Date().toISOString().split("T")[0]}.csv`;
     }
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-
     link.setAttribute("href", url);
     link.setAttribute("download", fileName);
     link.click();
 }
+
+/* ==================== 필터 초기화 ==================== */
 
 function initFilterOptions() {
     const yearSelect = document.getElementById("filter-year-select");
@@ -644,26 +645,26 @@ function initFilterOptions() {
         const option = document.createElement("option");
         option.value = y;
         option.innerText = y + "년";
-
         if (y === now.getFullYear()) {
             option.selected = true;
         }
-
         yearSelect.appendChild(option);
     }
 
     monthSelect.value = now.getMonth();
 }
 
+/* ==================== 페이지 초기화 ==================== */
+
 function initializePage() {
     const now = new Date();
-
     document.getElementById("current-date").innerText = `${now.getFullYear()}.${now.getMonth() + 1}.${now.getDate()}`;
     document.getElementById("start-date").value = now.toISOString().split("T")[0];
     document.getElementById("end-date").value = now.toISOString().split("T")[0];
 
     initFilterOptions();
     addUserForm();
+    initFirebaseListeners(); // ✅ Firebase 데이터 구독 시작
     refreshIcons();
 }
 
