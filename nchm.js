@@ -649,13 +649,7 @@ function submitForm(type) {
     const now = new Date();
     const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, "0")}`;
     const dateStr = now.toISOString().split("T")[0];
-
-    if (type === "visit") {
-        const name = document.getElementById("v-name-input").value.trim();
-        const gender = document.querySelector(".v-gender.active")?.childNodes[0]?.textContent?.trim() || document.querySelector(".v-gender.active")?.innerText?.trim();
-        const age = document.querySelector(".v-age.active")?.childNodes[0]?.textContent?.trim() || document.querySelector(".v-age.active")?.innerText?.trim();
-        const purposes = Array.from(document.querySelectorAll(".v-purpose.active")).map((purpose) => purpose.querySelector("span").innerText);
-        //여기부터 수정
+    
         if (type === "visit") {
     const purposes = Array.from(document.querySelectorAll(".v-purpose.active")).map((purpose) => purpose.querySelector("span").innerText);
 
@@ -733,7 +727,7 @@ function submitForm(type) {
                 addUserForm();
                 generateTimeSlots();
                 switchTab("visit"); 
-                document.getElementById("v-name-input").focus(); 
+                
             })
             .catch((err) => {
                 alert("저장 중 오류가 발생했습니다: " + err.message);
@@ -857,7 +851,7 @@ function initializePage() {
     addUserForm();
     initFirebaseListeners(); // ✅ Firebase 데이터 구독 시작
     refreshIcons();
-    document.getElementById("v-name-input").focus();
+
 }
 
 document.addEventListener("DOMContentLoaded", initializePage);
