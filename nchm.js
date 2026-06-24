@@ -778,6 +778,7 @@ function initializePage() {
     addUserForm();
     initFirebaseListeners(); // ✅ Firebase 데이터 구독 시작
     refreshIcons();
+    document.getElementById("v-name-input").focus();
 }
 
 document.addEventListener("DOMContentLoaded", initializePage);
