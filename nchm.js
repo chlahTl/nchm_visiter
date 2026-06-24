@@ -340,12 +340,13 @@ function generateTimeSlots() {
         .map((log) => log.timeSlot);
 
     if (isWeekend) {
-        indicator.innerText = "🗓️ 주말 운영 (10:00~18:00)";
+        indicator.innerText = "🗓️ 주말 운영 (10:00~17:30)";
         indicator.className = "mb-4 inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700";
 
         for (let h = 10; h < 18; h += 1) {
             if (h === 12) continue;
             ["00", "30"].forEach((m) => {
+                if (h === 17 && m === "30") return;
                 addTimeBtn(container, h, m, reservedSlots);
             });
         }
@@ -701,6 +702,8 @@ function submitForm(type) {
                 });
                 addUserForm();
                 generateTimeSlots();
+                switchTab("visit"); 
+                document.getElementById("v-name-input").focus(); 
             })
             .catch((err) => {
                 alert("저장 중 오류가 발생했습니다: " + err.message);
