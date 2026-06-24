@@ -209,6 +209,34 @@ function exitAdmin() {
     switchTab("visit");
 }
 
+function deleteVisitLog(key) {
+
+    if (!confirm("이 방문기록을 삭제하시겠습니까?")) return;
+
+    visitLogsRef.child(key)
+        .remove()
+        .then(() => {
+            showMessage("삭제 완료");
+        })
+        .catch((err) => {
+            alert(err.message);
+        });
+}
+
+function deleteArLog(key) {
+
+    if (!confirm("이 AR 예약을 삭제하시겠습니까?")) return;
+
+    arLogsRef.child(key)
+        .remove()
+        .then(() => {
+            showMessage("삭제 완료");
+        })
+        .catch((err) => {
+            alert(err.message);
+        });
+}
+
 /* ==================== 탭 전환 함수 ==================== */
 
 function switchTab(type) {
@@ -526,49 +554,83 @@ function updateAdminDashboard() {
     });
 
     renderStatsTable(arStats, ["AR 이용"], "ar-stats-body", "ar-stats-footer", "ar-sum-col");
-
+//여기 복붙
     const visitBody = document.getElementById("visit-log-body");
-    visitBody.innerHTML = "";
+visitBody.innerHTML = "";
 
-    filteredVisitLogs.slice().reverse().forEach((log) => {
-        const tr = document.createElement("tr");
-        tr.className = "border-b hover:bg-slate-50";
-        tr.innerHTML = `
-            <td class="py-3 text-slate-500 font-bold text-xs">${log.date}</td>
-            <td class="text-slate-400 font-medium">${log.time}</td>
-            <td class="font-bold">${log.name}</td>
-            <td>${log.gender}</td>
-            <td>${log.age.split("(")[0]}</td>
-            <td><div class="flex gap-1 justify-center">${log.purposes.map((purpose) => `<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[10px] font-bold">${purpose}</span>`).join("")}</div></td>
-        `;
-        visitBody.appendChild(tr);
-    });
+filteredVisitLogs.slice().reverse().forEach((log) => {
 
-    document.getElementById("visit-count-badge").innerText = filteredVisitLogs.length + "건";
+    const tr = document.createElement("tr");
+    tr.className = "border-b hover:bg-slate-50";
 
-    const arBody = document.getElementById("ar-log-body");
-    arBody.innerHTML = "";
+    tr.innerHTML = `
+        <td class="py-3 text-slate-500 font-bold text-xs">${log.date}</td>
+        <td class="text-slate-400 font-medium">${log.time}</td>
+        <td class="font-bold">${log.name}</td>
+        <td>${log.gender}</td>
+        <td>${log.age.split("(")[0]}</td>
 
-    filteredArLogs.slice().reverse().forEach((log) => {
-        const tr = document.createElement("tr");
-        tr.className = "border-b hover:bg-indigo-50/30";
+        <td>
+            <div class="flex gap-1 justify-center">
+                ${log.purposes.map((purpose) =>
+                    `<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[10px] font-bold">${purpose}</span>`
+                ).join("")}
+            </div>
+        </td>
 
-        const details = log.users
-            .map((user) => `<span class="inline-block bg-slate-100 rounded-lg px-2 py-1 mr-1 mb-1 text-slate-700 font-medium">${user.name}<span class="text-[10px] text-slate-400 ml-1">(${user.gender}, ${user.age.split("(")[0]})</span></span>`)
-            .join("");
+        <td>
+            <button onclick="deleteVisitLog('${log._key}')"
+                class="bg-red-500 text-white px-2 py-1 rounded text-xs">
+                삭제
+            </button>
+        </td>
+    `;
 
-        tr.innerHTML = `
-            <td class="py-3 text-slate-500 font-bold text-xs">${log.date}</td>
-            <td class="py-3 text-indigo-600 font-bold">${log.timeSlot}</td>
-            <td class="font-bold">${log.users[0].name}</td>
-            <td>${log.users.length}명</td>
-            <td class="text-xs text-left px-4 py-2">${details}</td>
-        `;
+    visitBody.appendChild(tr);
+});
 
-        arBody.appendChild(tr);
-    });
+document.getElementById("visit-count-badge").innerText =
+    filteredVisitLogs.length + "건";
 
-    document.getElementById("ar-count-badge").innerText = filteredArLogs.length + "건";
+const arBody = document.getElementById("ar-log-body");
+arBody.innerHTML = "";
+
+filteredArLogs.slice().reverse().forEach((log) => {
+
+    const tr = document.createElement("tr");
+    tr.className = "border-b hover:bg-indigo-50/30";
+
+    const details = log.users
+        .map((user) =>
+            `<span class="inline-block bg-slate-100 rounded-lg px-2 py-1 mr-1 mb-1 text-slate-700 font-medium">
+                ${user.name}
+                <span class="text-[10px] text-slate-400 ml-1">
+                    (${user.gender}, ${user.age.split("(")[0]})
+                </span>
+            </span>`
+        )
+        .join("");
+
+    tr.innerHTML = `
+        <td class="py-3 text-slate-500 font-bold text-xs">${log.date}</td>
+        <td class="py-3 text-indigo-600 font-bold">${log.timeSlot}</td>
+        <td class="font-bold">${log.users[0].name}</td>
+        <td>${log.users.length}명</td>
+        <td class="text-xs text-left px-4 py-2">${details}</td>
+
+        <td>
+            <button onclick="deleteArLog('${log._key}')"
+                class="bg-red-500 text-white px-2 py-1 rounded text-xs">
+                삭제
+            </button>
+        </td>
+    `;
+
+    arBody.appendChild(tr);
+});
+
+document.getElementById("ar-count-badge").innerText =
+    filteredArLogs.length + "건";
 }
 
 /* ==================== 폼 제출 (Firebase 저장) ==================== */
