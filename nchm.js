@@ -255,6 +255,7 @@ function switchTab(type) {
         document.getElementById("section-ar").classList.remove("hidden");
         document.getElementById("tab-ar").classList.add("active-ar");
         generateTimeSlots();
+        showArNotice(); // ar 팝업창 띄우는 함수에요
     }
 }
 
@@ -283,6 +284,14 @@ function selectBtn(el, group) {
 
 function togglePurpose(el) {
     el.classList.toggle("active");
+}
+* ==================== 팝업함수 ( AR) ==================== */
+function showArNotice() {
+    document.getElementById("ar-notice-modal").classList.remove("hidden");
+}
+
+function closeArNotice() {
+    document.getElementById("ar-notice-modal").classList.add("hidden");
 }
 
 /* ==================== AR 예약 이용자 카드 ==================== */
