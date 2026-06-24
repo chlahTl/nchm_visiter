@@ -296,7 +296,7 @@ function closeArNotice() {
 
 /* ==================== AR 예약 이용자 카드 ==================== */
 
-let arCount = 1;
+let arCount = 0;
 
 function changeArCount(delta) {
     const newCount = arCount + delta;
@@ -326,7 +326,7 @@ function changeArCount(delta) {
         container.appendChild(div);
         refreshIcons();
         div.querySelector("input")?.focus();
-    } else {
+    } else if (delta < 0) {
         // 마지막 카드 삭제
         if (container.lastElementChild) {
             container.lastElementChild.remove();
@@ -336,7 +336,7 @@ function changeArCount(delta) {
     arCount = newCount;
     document.getElementById("ar-count-display").innerText = arCount;
 }
-
+// 여기 까ㅣㅈ
 function selectGender(btn) {
     const parent = btn.parentElement;
     parent.querySelectorAll("button").forEach((button) => {
@@ -737,10 +737,10 @@ function submitForm(type) {
                 document.querySelectorAll(".time-slot-btn").forEach((button) => {
                     button.classList.remove("active");
                 });
-                arCount = 1;
-        document.getElementById("ar-count-display").innerText = "1";
-        changeArCount(0); // 카드 1개 초기화 (delta 0으로 숫자만 맞춤)
-        changeArCount(1); // 카드 1개 추가
+              arCount = 0;
+                document.getElementById("ar-user-container").innerHTML = "";
+                document.getElementById("ar-count-display").innerText = "0";
+            changeArCount(1);
         generateTimeSlots();
         switchTab("visit");
                 
