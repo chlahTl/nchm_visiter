@@ -136,11 +136,18 @@
                 <div class="bg-white/20 backdrop-blur-sm inline-block px-6 py-2.5 rounded-xl border border-white/30 text-sm">AR 이용하기 전에 정보를 입력해주세요</div>
             </div>
             <div class="bg-white rounded-b-[30px] p-6 card-shadow space-y-8">
+                
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="user-plus" class="w-6 h-6 text-indigo-500"></i> 이용자 정보</h2>
-                    <button onclick="addUserForm()" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-xl text-sm font-bold">+ 인원 추가</button>
-                </div>
-                <div id="ar-user-container" class="space-y-4"></div>
+    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="user-plus" class="w-6 h-6 text-indigo-500"></i> 이용자 정보</h2>
+    <div class="flex items-center gap-3">
+        <button onclick="changeArCount(-1)" class="w-9 h-9 rounded-xl bg-slate-200 text-slate-500 text-xl font-black flex items-center justify-center hover:bg-slate-300 transition-all">−</button>
+        <span id="ar-count-display" class="text-xl font-black text-slate-800 w-6 text-center">1</span>
+        <button onclick="changeArCount(1)" class="w-9 h-9 rounded-xl bg-indigo-500 text-white text-xl font-black flex items-center justify-center hover:bg-indigo-600 transition-all">+</button>
+    </div>
+</div>
+<div id="ar-user-container" class="space-y-4"></div>
+
+                
                 <div class="border-t pt-8">
                     <h2 class="text-xl font-bold text-indigo-900 mb-6 flex items-center gap-2">
                         <i data-lucide="calendar-check" class="w-6 h-6"></i> 예약 시간대 선택 <span class="text-red-500">*</span>
