@@ -30,6 +30,9 @@ const firebaseConfig = {
 // Firebase 앱 초기화
 firebase.initializeApp(firebaseConfig);
 
+// Firebase Authentication
+const auth = firebase.auth();
+
 // Realtime Database 참조
 const db = firebase.database();
 const visitLogsRef = db.ref("visitLogs");
@@ -123,15 +126,27 @@ function closePasswordModal() {
 
 /**
  * 관리자 비밀번호 검증
- * ⚠️ 비밀번호: 9806 (필요시 변경 가능)
+
  */
-function verifyAdminPassword() {
-    const inputPassword = document.getElementById("admin-password-input").value;
-    if (inputPassword === "9806") {
+async function verifyAdminPassword() {
+
+    const password =
+        document.getElementById("admin-password-input").value;
+
+    try {
+
+        await auth.signInWithEmailAndPassword(
+            "kjs1974kjs@gmail.com",
+            password
+        );
+
         enterAdminMode();
         closePasswordModal();
-    } else {
+
+    } catch (e) {
+
         showMessage("비밀번호가 틀렸습니다.");
+
         document.getElementById("admin-password-input").value = "";
         document.getElementById("admin-password-input").focus();
     }
