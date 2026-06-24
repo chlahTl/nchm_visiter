@@ -140,10 +140,45 @@ async function verifyAdminPassword() {
             password
         );
 
-        enterAdminMode();
         closePasswordModal();
 
+        // 로그인 완료 후 데이터 재구독
+        visitLogsRef.off();
+        arLogsRef.off();
+
+        visitLogsRef.on("value", (snapshot) => {
+            visitLogs = [];
+
+            snapshot.forEach((child) => {
+                visitLogs.push({
+                    _key: child.key,
+                    ...child.val()
+                });
+            });
+
+            updateAdminDashboard();
+        });
+
+        arLogsRef.on("value", (snapshot) => {
+            arLogs = [];
+
+            snapshot.forEach((child) => {
+                arLogs.push({
+                    _key: child.key,
+                    ...child.val()
+                });
+            });
+
+            updateAdminDashboard();
+        });
+
+        setTimeout(() => {
+            enterAdminMode();
+        }, 500);
+
     } catch (e) {
+
+        console.error(e);
 
         showMessage("비밀번호가 틀렸습니다.");
 
