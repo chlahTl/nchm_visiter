@@ -652,7 +652,7 @@ function submitForm(type) {
         }
 
         const logData = { date: dateStr, time: timeStr, name, gender, age, purposes };
-
+        //수정이안됨됨
         // ✅ Firebase에 저장
         saveVisitLog(logData)
             .then(() => {
