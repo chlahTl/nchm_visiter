@@ -4,7 +4,7 @@
  * Firebase Realtime Database와 연동하여 데이터를 저장합니다.
  *
  * 수정 규칙:
- * 1. 비밀번호 변경 가능 (현재: 9806)
+ * 
  * 2. 데이터 저장 구조(AGE_GROUPS, PURPOSES)는 표준을 따르세요
  * 3. HTML 요소 ID명 변경 금지 (nchm.html과 연동)
  * 4. 스타일 수정은 nchm.css에서만 처리
@@ -13,8 +13,7 @@
 
 /* ==================== Firebase 초기화 ==================== */
 
-// Firebase SDK를 CDN으로 불러옵니다 (nchm.html <head>에 추가 필요 - 아래 주석 참고)
-// <script type="module"> 방식 대신 compat 버전을 사용합니다 (기존 코드와 호환)
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyDm2x9BtBynGBJYZ56eNjoAMH3fxIGdyyw",
