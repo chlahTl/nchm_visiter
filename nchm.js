@@ -77,8 +77,8 @@ function initFirebaseListeners() {
         arLogs = [];
         snapshot.forEach((child) => {
             arLogs.push({ _key: child.key, ...child.val() });
-       });
-    updateAdminDashboard();
+        });
+        updateAdminDashboard();
     });
 }
 
@@ -89,6 +89,7 @@ function refreshIcons() {
         lucide.createIcons();
     }
 }
+
 function formatLocalDate(date = new Date()) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -533,9 +534,10 @@ function renderStatsTable(data, categories, targetBodyId, targetFooterId, themeC
 /* ==================== 관리자 대시보드 업데이트 ==================== */
 
 function updateAdminDashboard() {
-     if (!document.getElementById("visit-log-body") || !document.getElementById("ar-log-body")) {
+    if (!document.getElementById("visit-log-body") || !document.getElementById("ar-log-body")) {
         return;
     }
+
     const filteredVisitLogs = visitLogs.filter((log) => isDateInRange(log.date));
     const filteredArLogs = arLogs.filter((log) => isDateInRange(log.date));
 
@@ -550,7 +552,7 @@ function updateAdminDashboard() {
     });
 
     filteredVisitLogs.forEach((log) => {
-         (log.purposes || []).forEach((purpose) => {
+        (log.purposes || []).forEach((purpose) => {
             if (generalPurposes.includes(purpose) && vStats[purpose] && vStats[purpose][log.age]) {
                 vStats[purpose][log.age][log.gender] += 1;
             }
@@ -565,7 +567,7 @@ function updateAdminDashboard() {
     });
 
     filteredVisitLogs.forEach((log) => {
-         if ((log.purposes || []).includes("스터디룸")) {
+        if ((log.purposes || []).includes("스터디룸")) {
             studyStats["스터디룸"][log.age][log.gender] += 1;
         }
     });
@@ -578,7 +580,7 @@ function updateAdminDashboard() {
     });
 
     filteredArLogs.forEach((log) => {
-         (log.users || []).forEach((user) => {
+        (log.users || []).forEach((user) => {
             if (arStats["AR 이용"][user.age]) {
                 arStats["AR 이용"][user.age][user.gender] += 1;
             }
@@ -604,7 +606,7 @@ filteredVisitLogs.slice().reverse().forEach((log) => {
 
         <td>
             <div class="flex gap-1 justify-center">
-                   ${(log.purposes || []).map((purpose) =>
+                ${(log.purposes || []).map((purpose) =>
                     `<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[10px] font-bold">${purpose}</span>`
                 ).join("")}
             </div>
@@ -646,7 +648,7 @@ filteredArLogs.slice().reverse().forEach((log) => {
     tr.innerHTML = `
         <td class="py-3 text-slate-500 font-bold text-xs">${log.date}</td>
         <td class="py-3 text-indigo-600 font-bold">${log.timeSlot}</td>
-          <td class="font-bold">${log.users?.[0]?.name || ""}</td>
+        <td class="font-bold">${log.users?.[0]?.name || ""}</td>
         <td>${log.users?.length || 0}명</td>
         <td class="text-xs text-left px-4 py-2">${details}</td>
 
@@ -670,7 +672,7 @@ document.getElementById("ar-count-badge").innerText =
 function submitForm(type) {
     const now = new Date();
     const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, "0")}`;
-     const dateStr = formatLocalDate(now);
+    const dateStr = formatLocalDate(now);
     
         if (type === "visit") {
     const purposes = Array.from(document.querySelectorAll(".v-purpose.active")).map((purpose) => purpose.querySelector("span").innerText);
@@ -774,9 +776,9 @@ function exportToExcel(type) {
         }
         csvContent += "날짜,시간,이름,성별,나이,이용목적\n";
         filtered.forEach((log) => {
-             csvContent += `${log.date},${log.time},${log.name},${log.gender},${log.age.split("(")[0]},"${(log.purposes || []).join(", ")}"\n`;
+            csvContent += `${log.date},${log.time},${log.name},${log.gender},${log.age.split("(")[0]},"${(log.purposes || []).join(", ")}"\n`;
         });
-         fileName = `방문등록_${formatLocalDate(new Date())}.csv`;
+        fileName = `방문등록_${formatLocalDate(new Date())}.csv`;
     } else {
         const filtered = arLogs.filter((log) => isDateInRange(log.date));
         if (filtered.length === 0) {
@@ -785,10 +787,10 @@ function exportToExcel(type) {
         }
         csvContent += "예약날짜,예약시간,대표자,총인원,이용자상세\n";
         filtered.forEach((log) => {
-             const details = (log.users || []).map((user) => `${user.name}(${user.gender}/${user.age.split("(")[0]})`).join(" | ");
+            const details = (log.users || []).map((user) => `${user.name}(${user.gender}/${user.age.split("(")[0]})`).join(" | ");
             csvContent += `${log.date},${log.timeSlot},${log.users?.[0]?.name || ""},${log.users?.length || 0},"${details}"\n`;
         });
-        fileName = `AR예약_${new Date().toISOString().split("T")[0]}.csv`;
+        fileName = `AR예약_${formatLocalDate(new Date())}.csv`;
     }
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -871,7 +873,6 @@ function initializePage() {
     document.getElementById("current-date").innerText = `${now.getFullYear()}.${now.getMonth() + 1}.${now.getDate()}`;
     document.getElementById("start-date").value = formatLocalDate(now);
     document.getElementById("end-date").value = formatLocalDate(now);
-
 
     initFilterOptions();
     changeArCount(1);
