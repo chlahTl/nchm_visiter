@@ -661,6 +661,7 @@ function submitForm(type) {
                 document.querySelectorAll(".v-gender, .v-age, .v-purpose").forEach((button) => {
                     button.classList.remove("active");
                 });
+                 document.getElementById("v-name-input").focus();
             })
             .catch((err) => {
                 alert("저장 중 오류가 발생했습니다: " + err.message);
