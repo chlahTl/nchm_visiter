@@ -655,28 +655,49 @@ function submitForm(type) {
         const gender = document.querySelector(".v-gender.active")?.childNodes[0]?.textContent?.trim() || document.querySelector(".v-gender.active")?.innerText?.trim();
         const age = document.querySelector(".v-age.active")?.childNodes[0]?.textContent?.trim() || document.querySelector(".v-age.active")?.innerText?.trim();
         const purposes = Array.from(document.querySelectorAll(".v-purpose.active")).map((purpose) => purpose.querySelector("span").innerText);
+        //여기부터 수정
+        if (type === "visit") {
+    const purposes = Array.from(document.querySelectorAll(".v-purpose.active")).map((purpose) => purpose.querySelector("span").innerText);
 
-        if (!name || !gender || !age || purposes.length === 0) {
-            showMessage("정보를 모두 입력해 주세요!");
-            return;
-        }
+    if (purposes.length === 0) {
+        showMessage("이용 목적을 선택해 주세요!");
+        return;
+    }
 
-        const logData = { date: dateStr, time: timeStr, name, gender, age, purposes };
-        //수정이안됨됨
-        // ✅ Firebase에 저장
-        saveVisitLog(logData)
-            .then(() => {
-                alert("방문 등록이 완료되었습니다!");
-                document.getElementById("v-name-input").value = "";
-                document.querySelectorAll(".v-gender, .v-age, .v-purpose").forEach((button) => {
-                    button.classList.remove("active");
-                });
-                 document.getElementById("v-name-input").focus();
-            })
-            .catch((err) => {
-                alert("저장 중 오류가 발생했습니다: " + err.message);
-            });
+    const users = Array.from(document.querySelectorAll("#visit-user-container .ar-user-card")).map((card) => {
+        const genderBtn = Array.from(card.querySelectorAll("button")).find((button) => button.classList.contains("bg-white"));
+        return {
+            name: card.querySelector("input").value.trim(),
+            gender: genderBtn ? genderBtn.innerText.trim() : "남",
+            age: card.querySelector("select").value
+        };
+    });
 
+    if (users.length === 0 || users.some((user) => !user.name || !user.age)) {
+        showMessage("모든 방문자 정보를 입력해 주세요!");
+        return;
+    }
+
+    const savePromises = users.map((user) => {
+        const logData = { date: dateStr, time: timeStr, name: user.name, gender: user.gender, age: user.age, purposes };
+        return saveVisitLog(logData);
+    });
+
+    Promise.all(savePromises)
+        .then(() => {
+            alert(`${users.length}명 방문 등록이 완료되었습니다!`);
+            visitCount = 1;
+            document.getElementById("v-count-display").innerText = "1";
+            document.getElementById("v-count-minus").classList.add("opacity-40", "cursor-not-allowed");
+            document.getElementById("visit-user-container").innerHTML = "";
+            document.getElementById("visit-user-container").classList.add("hidden");
+            document.getElementById("v-form-bottom").classList.add("hidden");
+            document.querySelectorAll(".v-purpose").forEach((button) => button.classList.remove("active"));
+        })
+        .catch((err) => {
+            alert("저장 중 오류가 발생했습니다: " + err.message);
+        });
+//여기까지 
     } else {
         const timeSlot = document.querySelector(".time-slot-btn.active")?.querySelector("span")?.innerText;
 
@@ -778,7 +799,52 @@ function initFilterOptions() {
 
     monthSelect.value = now.getMonth();
 }
+/* ==================== 방문 등록 인원수 ==================== */
 
+let visitCount = 1;
+
+function changeVisitCount(delta) {
+    visitCount = Math.max(1, visitCount + delta);
+    document.getElementById("v-count-display").innerText = visitCount;
+    const minusBtn = document.getElementById("v-count-minus");
+    if (visitCount === 1) {
+        minusBtn.classList.add("opacity-40", "cursor-not-allowed");
+    } else {
+        minusBtn.classList.remove("opacity-40", "cursor-not-allowed");
+    }
+}
+
+function confirmVisitCount() {
+    const container = document.getElementById("visit-user-container");
+    const bottom = document.getElementById("v-form-bottom");
+    container.innerHTML = "";
+    for (let i = 0; i < visitCount; i++) {
+        const div = document.createElement("div");
+        div.className = "ar-user-card card-shadow animate-fadeIn";
+        div.innerHTML = `
+            <div class="flex flex-1 gap-3">
+                <div class="flex-1"><input type="text" maxlength="4" placeholder="이름" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center text-base font-bold outline-none focus:border-blue-400"></div>
+                <div class="flex bg-slate-100 p-1.5 rounded-2xl gap-1 w-32 shrink-0">
+                    <button type="button" class="flex-1 py-2.5 bg-white rounded-xl text-sm font-bold shadow-sm" onclick="selectGender(this)">남</button>
+                    <button type="button" class="flex-1 py-2.5 text-sm font-bold text-slate-400" onclick="selectGender(this)">여</button>
+                </div>
+            </div>
+            <div class="flex gap-3 items-center">
+                <select class="flex-1 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-bold outline-none focus:border-blue-400">
+                    <option value="" disabled selected>나이 선택</option>
+                    ${AGE_GROUPS.map((age) => `<option>${age}</option>`).join("")}
+                </select>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+    container.classList.remove("hidden");
+    bottom.classList.remove("hidden");
+    refreshIcons();
+    setTimeout(() => {
+        container.querySelector("input")?.focus();
+    }, 100);
+}
 /* ==================== 페이지 초기화 ==================== */
 
 function initializePage() {
