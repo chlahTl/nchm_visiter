@@ -296,32 +296,45 @@ function closeArNotice() {
 
 /* ==================== AR 예약 이용자 카드 ==================== */
 
-function addUserForm() {
+let arCount = 1;
+
+function changeArCount(delta) {
+    const newCount = arCount + delta;
+    if (newCount < 1) return;
+
     const container = document.getElementById("ar-user-container");
-    const div = document.createElement("div");
 
-    div.className = "ar-user-card card-shadow animate-fadeIn";
-    div.innerHTML = `
-        <div class="flex flex-1 gap-3">
-            <div class="flex-1"><input type="text" placeholder="이름" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center text-base font-bold outline-none focus:border-indigo-400"></div>
-            <div class="flex bg-slate-100 p-1.5 rounded-2xl gap-1 w-32 shrink-0">
-                <button type="button" class="flex-1 py-2.5 bg-white rounded-xl text-sm font-bold shadow-sm" onclick="selectGender(this)">남</button>
-                <button type="button" class="flex-1 py-2.5 text-sm font-bold text-slate-400" onclick="selectGender(this)">여</button>
+    if (delta > 0) {
+        // 카드 추가
+        const div = document.createElement("div");
+        div.className = "ar-user-card card-shadow animate-fadeIn";
+        div.innerHTML = `
+            <div class="flex flex-1 gap-3">
+                <div class="flex-1"><input type="text" placeholder="이름" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center text-base font-bold outline-none focus:border-indigo-400"></div>
+                <div class="flex bg-slate-100 p-1.5 rounded-2xl gap-1 w-32 shrink-0">
+                    <button type="button" class="flex-1 py-2.5 bg-white rounded-xl text-sm font-bold shadow-sm" onclick="selectGender(this)">남</button>
+                    <button type="button" class="flex-1 py-2.5 text-sm font-bold text-slate-400" onclick="selectGender(this)">여</button>
+                </div>
             </div>
-        </div>
-        <div class="flex gap-3 items-center">
-            <select class="flex-1 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-bold outline-none focus:border-indigo-400">
-                <option value="" disabled selected>나이 선택</option>
-                ${AGE_GROUPS.map((age) => `<option>${age}</option>`).join("")}
-            </select>
-            <button type="button" onclick="this.closest('.ar-user-card').remove()" class="text-slate-300 hover:text-red-500 transition-colors p-2 shrink-0">
-                <i data-lucide="minus-circle" class="w-7 h-7"></i>
-            </button>
-        </div>
-    `;
+            <div class="flex gap-3 items-center">
+                <select class="flex-1 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-bold outline-none focus:border-indigo-400">
+                    <option value="" disabled selected>나이 선택</option>
+                    ${AGE_GROUPS.map((age) => `<option>${age}</option>`).join("")}
+                </select>
+            </div>
+        `;
+        container.appendChild(div);
+        refreshIcons();
+        div.querySelector("input")?.focus();
+    } else {
+        // 마지막 카드 삭제
+        if (container.lastElementChild) {
+            container.lastElementChild.remove();
+        }
+    }
 
-    container.appendChild(div);
-    refreshIcons();
+    arCount = newCount;
+    document.getElementById("ar-count-display").innerText = arCount;
 }
 
 function selectGender(btn) {
@@ -724,9 +737,12 @@ function submitForm(type) {
                 document.querySelectorAll(".time-slot-btn").forEach((button) => {
                     button.classList.remove("active");
                 });
-                addUserForm();
-                generateTimeSlots();
-                switchTab("visit"); 
+                arCount = 1;
+        document.getElementById("ar-count-display").innerText = "1";
+        changeArCount(0); // 카드 1개 초기화 (delta 0으로 숫자만 맞춤)
+        changeArCount(1); // 카드 1개 추가
+        generateTimeSlots();
+        switchTab("visit");
                 
             })
             .catch((err) => {
