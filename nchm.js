@@ -864,7 +864,7 @@ function initializePage() {
     document.getElementById("end-date").value = now.toISOString().split("T")[0];
 
     initFilterOptions();
-    addUserForm();
+    changeArCount(1);
     initFirebaseListeners(); // ✅ Firebase 데이터 구독 시작
     refreshIcons();
 
