@@ -140,15 +140,15 @@ async function verifyAdminPassword() {
             password
         );
 
+        alert("로그인 성공");
+
         enterAdminMode();
         closePasswordModal();
 
     } catch (e) {
 
-        showMessage("비밀번호가 틀렸습니다.");
-
-        document.getElementById("admin-password-input").value = "";
-        document.getElementById("admin-password-input").focus();
+        console.log(e);
+        alert(e.code + "\n" + e.message);
     }
 }
 
