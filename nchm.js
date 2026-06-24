@@ -285,7 +285,7 @@ function selectBtn(el, group) {
 function togglePurpose(el) {
     el.classList.toggle("active");
 }
-* ==================== 팝업함수 ( AR) ==================== */
+/* ==================== 팝업함수 ( AR) ==================== */
 function showArNotice() {
     document.getElementById("ar-notice-modal").classList.remove("hidden");
 }
