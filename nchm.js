@@ -136,7 +136,7 @@ async function verifyAdminPassword() {
     try {
 
         await auth.signInWithEmailAndPassword(
-            "kjs1974kjs@gmail.com",
+            "choewonhyeog387@gmail.com",
             password
         );
 
