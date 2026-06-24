@@ -304,7 +304,7 @@ function changeArCount(delta) {
     const container = document.getElementById("ar-user-container");
 
     if (delta > 0) {
-        // 카드 추가
+       
         const div = document.createElement("div");
         div.className = "ar-user-card card-shadow animate-fadeIn";
         div.innerHTML = `
@@ -326,7 +326,7 @@ function changeArCount(delta) {
         refreshIcons();
         div.querySelector("input")?.focus();
     } else if (delta < 0) {
-        // 마지막 카드 삭제
+        
         if (container.lastElementChild) {
             container.lastElementChild.remove();
         }
@@ -335,7 +335,6 @@ function changeArCount(delta) {
     arCount = newCount;
     document.getElementById("ar-count-display").innerText = arCount;
 }
-// 여기 까ㅣㅈ
 function selectGender(btn) {
     const parent = btn.parentElement;
     parent.querySelectorAll("button").forEach((button) => {
