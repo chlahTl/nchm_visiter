@@ -716,36 +716,44 @@ function submitForm(type) {
     const dateStr = formatLocalDate(now);
     //여기
        if (type === "visit") {
-    const name = document.getElementById("v-name-input").value.trim();
-    const genderBtn = document.querySelector(".v-gender.active");
-    const ageBtn = document.querySelector(".v-age.active");
     const purposes = Array.from(document.querySelectorAll(".v-purpose.active")).map((purpose) => purpose.querySelector("span").innerText);
 
-    if (!name || !genderBtn || !ageBtn || purposes.length === 0) {
-        showMessage("정보를 모두 입력해 주세요!");
+    if (purposes.length === 0) {
+        showMessage("이용 목적을 선택해 주세요!");
         return;
     }
 
-    const logData = {
-        date: dateStr,
-        time: timeStr,
-        name: name,
-        gender: genderBtn.innerText.replace(/\s/g, "").charAt(0),
-        age: ageBtn.innerText.replace(/\s/g, "").replace("✓", "").trim(),
-        purposes
-    };
+    const users = Array.from(document.querySelectorAll("#visit-user-container .ar-user-card")).map((card) => {
+        const genderBtn = Array.from(card.querySelectorAll("button")).find((button) => button.classList.contains("bg-white"));
+        return {
+            name: card.querySelector("input").value.trim(),
+            gender: genderBtn ? genderBtn.innerText.trim() : "남",
+            age: card.querySelector("select").value
+        };
+    });
 
-    saveVisitLog(logData)
+    if (users.length === 0 || users.some((user) => !user.name || !user.age)) {
+        showMessage("모든 방문자 정보를 입력해 주세요!");
+        return;
+    }
+
+    const savePromises = users.map((user) => {
+        const logData = { date: dateStr, time: timeStr, name: user.name, gender: user.gender, age: user.age, purposes };
+        return saveVisitLog(logData);
+    });
+
+    Promise.all(savePromises)
         .then(() => {
-            alert("방문 등록이 완료되었습니다!");
-            document.getElementById("v-name-input").value = "";
-            document.querySelectorAll(".v-gender").forEach((button) => button.classList.remove("active"));
-            document.querySelectorAll(".v-age").forEach((button) => button.classList.remove("active"));
+            alert(`${users.length}명 방문 등록이 완료되었습니다!`);
+            document.getElementById("visit-user-container").innerHTML = "";
             document.querySelectorAll(".v-purpose").forEach((button) => button.classList.remove("active"));
+            visitCount = 0;
+            changeVisitCount(1);
         })
         .catch((err) => {
             alert("저장 중 오류가 발생했습니다: " + err.message);
         });
+//여기까지
 //여기까지 
     } else {
         const timeSlot = document.querySelector(".time-slot-btn.active")?.querySelector("span")?.innerText;
@@ -852,30 +860,20 @@ function initFilterOptions() {
     monthSelect.value = now.getMonth();
 }
 /* ==================== 방문 등록 인원수 ==================== */
-
 let visitCount = 1;
 
 function changeVisitCount(delta) {
-    visitCount = Math.max(1, visitCount + delta);
-    document.getElementById("v-count-display").innerText = visitCount;
-    const minusBtn = document.getElementById("v-count-minus");
-    if (visitCount === 1) {
-        minusBtn.classList.add("opacity-40", "cursor-not-allowed");
-    } else {
-        minusBtn.classList.remove("opacity-40", "cursor-not-allowed");
-    }
-}
+    const newCount = visitCount + delta;
+    if (newCount < 1) return;
 
-function confirmVisitCount() {
     const container = document.getElementById("visit-user-container");
-    const bottom = document.getElementById("v-form-bottom");
-    container.innerHTML = "";
-    for (let i = 0; i < visitCount; i++) {
+
+    if (delta > 0) {
         const div = document.createElement("div");
         div.className = "ar-user-card card-shadow animate-fadeIn";
         div.innerHTML = `
             <div class="flex flex-1 gap-3">
-                <div class="flex-1"><input type="text" maxlength="4" placeholder="이름" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center text-base font-bold outline-none focus:border-blue-400"></div>
+                <div class="flex-1"><input type="text" placeholder="이름" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center text-base font-bold outline-none focus:border-blue-400"></div>
                 <div class="flex bg-slate-100 p-1.5 rounded-2xl gap-1 w-32 shrink-0">
                     <button type="button" class="flex-1 py-2.5 bg-white rounded-xl text-sm font-bold shadow-sm" onclick="selectGender(this)">남</button>
                     <button type="button" class="flex-1 py-2.5 text-sm font-bold text-slate-400" onclick="selectGender(this)">여</button>
@@ -889,13 +887,23 @@ function confirmVisitCount() {
             </div>
         `;
         container.appendChild(div);
+        refreshIcons();
+        div.querySelector("input")?.focus();
+    } else if (delta < 0) {
+        if (container.lastElementChild) {
+            container.lastElementChild.remove();
+        }
     }
-    container.classList.remove("hidden");
-    bottom.classList.remove("hidden");
-    refreshIcons();
-    setTimeout(() => {
-        container.querySelector("input")?.focus();
-    }, 100);
+
+    visitCount = newCount;
+    document.getElementById("v-count-display").innerText = visitCount;
+
+    const minusBtn = document.getElementById("v-count-minus");
+    if (visitCount === 1) {
+        minusBtn.classList.add("opacity-40", "cursor-not-allowed");
+    } else {
+        minusBtn.classList.remove("opacity-40", "cursor-not-allowed");
+    }
 }
 /* ==================== 페이지 초기화 ==================== */
 
@@ -909,6 +917,7 @@ function initializePage() {
     changeArCount(1);
     initFirebaseListeners(); // ✅ Firebase 데이터 구독 시작
     refreshIcons();
+    changeVisitCount(1);
 
 }
 
