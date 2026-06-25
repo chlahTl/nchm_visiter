@@ -917,6 +917,7 @@ function initializePage() {
     changeArCount(1);
     initFirebaseListeners(); // ✅ Firebase 데이터 구독 시작
     refreshIcons();
+    visitCount = 0;
     changeVisitCount(1);
 
 }
