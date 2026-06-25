@@ -714,43 +714,33 @@ function submitForm(type) {
     const now = new Date();
     const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, "0")}`;
     const dateStr = formatLocalDate(now);
-    
-        if (type === "visit") {
+    //여기
+       if (type === "visit") {
+    const name = document.getElementById("v-name-input").value.trim();
+    const genderBtn = document.querySelector(".v-gender.active");
+    const ageBtn = document.querySelector(".v-age.active");
     const purposes = Array.from(document.querySelectorAll(".v-purpose.active")).map((purpose) => purpose.querySelector("span").innerText);
 
-    if (purposes.length === 0) {
-        showMessage("이용 목적을 선택해 주세요!");
+    if (!name || !genderBtn || !ageBtn || purposes.length === 0) {
+        showMessage("정보를 모두 입력해 주세요!");
         return;
     }
 
-    const users = Array.from(document.querySelectorAll("#visit-user-container .ar-user-card")).map((card) => {
-        const genderBtn = Array.from(card.querySelectorAll("button")).find((button) => button.classList.contains("bg-white"));
-        return {
-            name: card.querySelector("input").value.trim(),
-            gender: genderBtn ? genderBtn.innerText.trim() : "남",
-            age: card.querySelector("select").value
-        };
-    });
+    const logData = {
+        date: dateStr,
+        time: timeStr,
+        name: name,
+        gender: genderBtn.innerText.replace(/\s/g, "").charAt(0),
+        age: ageBtn.innerText.replace(/\s/g, "").replace("✓", "").trim(),
+        purposes
+    };
 
-    if (users.length === 0 || users.some((user) => !user.name || !user.age)) {
-        showMessage("모든 방문자 정보를 입력해 주세요!");
-        return;
-    }
-
-    const savePromises = users.map((user) => {
-        const logData = { date: dateStr, time: timeStr, name: user.name, gender: user.gender, age: user.age, purposes };
-        return saveVisitLog(logData);
-    });
-
-    Promise.all(savePromises)
+    saveVisitLog(logData)
         .then(() => {
-            alert(`${users.length}명 방문 등록이 완료되었습니다!`);
-            visitCount = 1;
-            document.getElementById("v-count-display").innerText = "1";
-            document.getElementById("v-count-minus").classList.add("opacity-40", "cursor-not-allowed");
-            document.getElementById("visit-user-container").innerHTML = "";
-            document.getElementById("visit-user-container").classList.add("hidden");
-            document.getElementById("v-form-bottom").classList.add("hidden");
+            alert("방문 등록이 완료되었습니다!");
+            document.getElementById("v-name-input").value = "";
+            document.querySelectorAll(".v-gender").forEach((button) => button.classList.remove("active"));
+            document.querySelectorAll(".v-age").forEach((button) => button.classList.remove("active"));
             document.querySelectorAll(".v-purpose").forEach((button) => button.classList.remove("active"));
         })
         .catch((err) => {
