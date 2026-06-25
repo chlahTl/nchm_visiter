@@ -339,6 +339,9 @@ function showArNotice() {
 
     },1000);
 }
+function closeArNotice() {
+    document.getElementById("ar-notice-modal").classList.add("hidden");
+}
 
 /* ==================== AR 예약 이용자 카드 ==================== */
 
