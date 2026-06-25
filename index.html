@@ -71,32 +71,17 @@
             </div>
          
                 <div class="bg-white rounded-b-[30px] p-8 card-shadow space-y-8">
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-base font-bold mb-3 text-slate-700">이름 <span class="text-red-500">*</span></label>
-                        <input type="text" id="v-name-input" placeholder="이름 입력" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-lg text-center outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-base font-bold mb-3 text-slate-700">성별 <span class="text-red-500">*</span></label>
-                        <div class="flex gap-2">
-                            <button onclick="selectBtn(this, 'v-gender')" class="choice-btn v-gender rounded-2xl flex-1 py-4 text-slate-600 font-bold">남<div class="check-badge"><i data-lucide="check" class="w-4 h-4"></i></div></button>
-                            <button onclick="selectBtn(this, 'v-gender')" class="choice-btn v-gender rounded-2xl flex-1 py-4 text-slate-600 font-bold">여<div class="check-badge"><i data-lucide="check" class="w-4 h-4"></i></div></button>
-                        </div>
+               <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="user-plus" class="w-6 h-6 text-blue-500"></i> 방문자 정보
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <button id="v-count-minus" onclick="changeVisitCount(-1)" class="w-9 h-9 rounded-xl bg-slate-200 text-slate-500 text-xl font-black flex items-center justify-center opacity-40 cursor-not-allowed transition-all">−</button>
+                        <span id="v-count-display" class="text-xl font-black text-slate-800 w-6 text-center">1</span>
+                        <button onclick="changeVisitCount(1)" class="w-9 h-9 rounded-xl bg-blue-500 text-white text-xl font-black flex items-center justify-center hover:bg-blue-600 transition-all">+</button>
                     </div>
                 </div>
-
-                <div>
-                    <label class="block text-base font-bold mb-4 text-slate-700">나이 <span class="text-red-500">*</span></label>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <button onclick="selectBtn(this, 'v-age')" class="choice-btn v-age rounded-xl py-4 text-[13px] text-slate-600 font-medium">초등(9~13세)<div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div></button>
-                        <button onclick="selectBtn(this, 'v-age')" class="choice-btn v-age rounded-xl py-4 text-[13px] text-slate-600 font-medium">중등(14~16세)<div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div></button>
-                        <button onclick="selectBtn(this, 'v-age')" class="choice-btn v-age rounded-xl py-4 text-[13px] text-slate-600 font-medium">고등(17~19세)<div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div></button>
-                        <button onclick="selectBtn(this, 'v-age')" class="choice-btn v-age rounded-xl py-4 text-[13px] text-slate-600 font-medium">청년(20~24세)<div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div></button>
-                        <button onclick="selectBtn(this, 'v-age')" class="choice-btn v-age rounded-xl py-4 text-[13px] text-slate-600 font-medium">청년(25~39세)<div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div></button>
-                        <button onclick="selectBtn(this, 'v-age')" class="choice-btn v-age rounded-xl py-4 text-[13px] text-slate-600 font-medium">유아(8세 미만)<div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div></button>
-                        <button onclick="selectBtn(this, 'v-age')" class="choice-btn v-age rounded-xl py-4 text-[13px] text-slate-600 font-medium">성인(40세 이상)<div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div></button>
-                    </div>
-                </div>
+                <div id="visit-user-container" class="space-y-4"></div>
 
                 <!-- 이용 목적 섹션 -->
 
