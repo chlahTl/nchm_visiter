@@ -61,27 +61,61 @@
     </div>
 
     <!-- ==================== 메인 콘텐츠 컨테이너 ==================== -->
-    <div class="max-w-xl mx-auto px-4" id="main-content-container">
-        
-        <!-- ==================== 1. 방문 등록 섹션 ==================== -->
-        <div id="section-visit" class="animate-fadeIn">
-            <div class="gradient-banner rounded-t-[30px] p-8 sm:p-10 text-center text-white">
-                <h1 class="text-2xl sm:text-3xl font-black mb-4 leading-tight tracking-tight">시흥시능곡청소년문화의집<br>방문을 환영합니다 ✨</h1>
-                <div class="bg-white/20 backdrop-blur-sm inline-block px-5 py-2 rounded-xl border border-white/30 text-[13px] sm:text-sm font-medium">문화의집 이용하기 전에 정보를 입력해주세요</div>
-            </div>
-            <div class="bg-white rounded-b-[30px] p-8 card-shadow space-y-8">
-                // 여기 부터 삭제 함
-               <!-- 인원수 선택 -->
-            <div>
-            <label class="block text-base font-bold mb-4 text-slate-700">방문 인원 <span class="text-red-500">*</span></label>
-            <div class="flex items-center justify-center gap-6 bg-slate-50 rounded-2xl py-5 border border-slate-200">
-                <button id="v-count-minus" onclick="changeVisitCount(-1)" class="w-12 h-12 rounded-2xl bg-slate-200 text-slate-400 text-2xl font-black flex items-center justify-center opacity-40 cursor-not-allowed">−</button>
-            <span id="v-count-display" class="text-4xl font-black text-slate-800 w-12 text-center">1</span>
-            <button onclick="changeVisitCount(1)" class="w-12 h-12 rounded-2xl bg-blue-500 text-white text-2xl font-black flex items-center justify-center hover:bg-blue-600">+</button>
-            </div>
-            <button onclick="confirmVisitCount()" class="mt-3 w-full py-3 bg-slate-800 text-white font-bold rounded-2xl text-base hover:bg-slate-900 transition-colors">확인 →</button>
-            </div>
-            </div>
+    <!-- section-visit 안의 bg-white rounded-b-[30px] 내부 전체를 이걸로 교체 -->
+<div class="bg-white rounded-b-[30px] p-8 card-shadow space-y-8">
+
+    <!-- 이용자 정보 헤더 + +/- 버튼 -->
+    <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="user-plus" class="w-6 h-6 text-blue-500"></i> 이용자 정보
+        </h2>
+        <div class="flex items-center gap-3">
+            <button onclick="changeVisitCount(-1)" class="w-9 h-9 rounded-xl bg-slate-200 text-slate-500 text-xl font-black flex items-center justify-center hover:bg-slate-300 transition-all">−</button>
+            <span id="v-count-display" class="text-xl font-black text-slate-800 w-6 text-center">1</span>
+            <button onclick="changeVisitCount(1)" class="w-9 h-9 rounded-xl bg-blue-500 text-white text-xl font-black flex items-center justify-center hover:bg-blue-600 transition-all">+</button>
+        </div>
+    </div>
+
+    <!-- 방문자 카드 컨테이너 -->
+    <div id="visit-user-container" class="space-y-4"></div>
+
+    <!-- 이용 목적 섹션 -->
+    <div class="bg-blue-50/50 rounded-3xl p-6 border border-blue-100">
+        <div class="text-center mb-5">
+            <h2 class="text-xl font-black text-blue-900">오늘 무엇을 하며 보낼까요?</h2>
+            <p class="text-blue-600 text-[13.5px] mt-2 font-bold">(여러 개 선택이 가능해요)</p>
+        </div>
+        <div class="grid grid-cols-5 gap-2">
+            <button onclick="togglePurpose(this)" class="choice-btn v-purpose flex flex-col items-center p-3 rounded-2xl">
+                <img src="https://em-content.zobj.net/source/apple/354/hot-beverage_2615.png" class="w-8 h-8 mb-1" alt="휴식">
+                <span class="text-[12px] font-bold">휴식</span>
+                <div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div>
+            </button>
+            <button onclick="togglePurpose(this)" class="choice-btn v-purpose flex flex-col items-center p-3 rounded-2xl">
+                <img src="https://em-content.zobj.net/source/apple/354/open-book_1f4d6.png" class="w-8 h-8 mb-1" alt="독서">
+                <span class="text-[12px] font-bold">독서</span>
+                <div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div>
+            </button>
+            <button onclick="togglePurpose(this)" class="choice-btn v-purpose flex flex-col items-center p-3 rounded-2xl">
+                <img src="https://em-content.zobj.net/source/apple/354/game-die_1f3b2.png" class="w-8 h-8 mb-1" alt="보드게임">
+                <span class="text-[12px] font-bold">보드게임</span>
+                <div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div>
+            </button>
+            <button onclick="togglePurpose(this)" class="choice-btn v-purpose flex flex-col items-center p-3 rounded-2xl">
+                <img src="https://em-content.zobj.net/source/apple/354/ping-pong_1f3d3.png" class="w-8 h-8 mb-1" alt="탁구">
+                <span class="text-[12px] font-bold">탁구</span>
+                <div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div>
+            </button>
+            <button onclick="togglePurpose(this)" class="choice-btn v-purpose flex flex-col items-center p-3 rounded-2xl">
+                <img src="https://em-content.zobj.net/source/apple/354/laptop_1f4bb.png" class="w-8 h-8 mb-1" alt="스터디룸">
+                <span class="text-[12px] font-bold">스터디룸</span>
+                <div class="check-badge"><i data-lucide="check" class="w-3 h-3"></i></div>
+            </button>
+        </div>
+    </div>
+
+    <button onclick="submitForm('visit')" class="submit-btn w-full text-white text-xl font-bold py-6 rounded-3xl">방문 등록 완료</button>
+</div>
 
 <!-- 방문자 카드 (확인 후 표시) -->
 <div id="visit-user-container" class="hidden space-y-4"></div>
