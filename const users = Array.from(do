@@ -723,7 +723,7 @@ function submitForm(type) {
         return;
     }
 
-    const users = Array.from(document.querySelectorAll("#ar-user-container .ar-user-card")).map((card) => {
+   const users = Array.from(document.querySelectorAll("#ar-user-container .ar-user-card")).map((card) => {
         const genderBtn = Array.from(card.querySelectorAll("button")).find((button) => button.classList.contains("bg-white"));
         return {
             name: card.querySelector("input").value.trim(),
