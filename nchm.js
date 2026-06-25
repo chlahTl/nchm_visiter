@@ -860,7 +860,7 @@ function initFilterOptions() {
     monthSelect.value = now.getMonth();
 }
 /* ==================== 방문 등록 인원수 ==================== */
-let visitCount = 1;
+let visitCount = 0;
 
 function changeVisitCount(delta) {
     const newCount = visitCount + delta;
@@ -915,10 +915,11 @@ function initializePage() {
 
     initFilterOptions();
     changeArCount(1);
+    changeVisitCount(1);
     initFirebaseListeners(); // ✅ Firebase 데이터 구독 시작
     refreshIcons();
-    visitCount = 0;
-    changeVisitCount(1);
+   
+    
 
 }
 
