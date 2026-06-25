@@ -401,7 +401,7 @@ function generateTimeSlots() {
 
     container.innerHTML = "";
 
-    submitFor
+    const now = new Date();
     const day = now.getDay();
     const isWeekend = day === 0 || day === 6;
     const todayStr = formatLocalDate(now);
@@ -711,7 +711,7 @@ document.getElementById("ar-count-badge").innerText =
 /* ==================== 폼 제출 (Firebase 저장) ==================== */
 
 function submitForm(type) {
-    방문 등록이
+    const now = new Date();
     const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, "0")}`;
     const dateStr = formatLocalDate(now);
     
@@ -744,11 +744,14 @@ function submitForm(type) {
 
     Promise.all(savePromises)
         .then(() => {
-             alert(`${users.length}명 방문 등록이 완료되었습니다!`);
-    document.getElementById("visit-user-container").innerHTML = "";
-    document.querySelectorAll(".v-purpose").forEach((btn) => btn.classList.remove("active"));
-    visitCount = 0;
-    changeVisitCount(1);
+            alert(`${users.length}명 방문 등록이 완료되었습니다!`);
+            visitCount = 1;
+            document.getElementById("v-count-display").innerText = "1";
+            document.getElementById("v-count-minus").classList.add("opacity-40", "cursor-not-allowed");
+            document.getElementById("visit-user-container").innerHTML = "";
+            document.getElementById("visit-user-container").classList.add("hidden");
+            document.getElementById("v-form-bottom").classList.add("hidden");
+            document.querySelectorAll(".v-purpose").forEach((button) => button.classList.remove("active"));
         })
         .catch((err) => {
             alert("저장 중 오류가 발생했습니다: " + err.message);
@@ -844,7 +847,7 @@ function exportToExcel(type) {
 function initFilterOptions() {
     const yearSelect = document.getElementById("filter-year-select");
     const monthSelect = document.getElementById("filter-month-select");
-    alert(`${users.length}명 방문 등록이 완료되었습니다!`);
+    const now = new Date();
 
     for (let y = now.getFullYear() - 1; y <= now.getFullYear() + 1; y += 1) {
         const option = document.createElement("option");
@@ -860,17 +863,24 @@ function initFilterOptions() {
 }
 /* ==================== 방문 등록 인원수 ==================== */
 
-/* ==================== 방문 등록 인원수 (AR과 동일한 방식) ==================== */
-
-let visitCount = 0;
+let visitCount = 1;
 
 function changeVisitCount(delta) {
-    const newCount = visitCount + delta;
-    if (newCount < 1) return;
+    visitCount = Math.max(1, visitCount + delta);
+    document.getElementById("v-count-display").innerText = visitCount;
+    const minusBtn = document.getElementById("v-count-minus");
+    if (visitCount === 1) {
+        minusBtn.classList.add("opacity-40", "cursor-not-allowed");
+    } else {
+        minusBtn.classList.remove("opacity-40", "cursor-not-allowed");
+    }
+}
 
+function confirmVisitCount() {
     const container = document.getElementById("visit-user-container");
-
-    if (delta > 0) {
+    const bottom = document.getElementById("v-form-bottom");
+    container.innerHTML = "";
+    for (let i = 0; i < visitCount; i++) {
         const div = document.createElement("div");
         div.className = "ar-user-card card-shadow animate-fadeIn";
         div.innerHTML = `
@@ -889,16 +899,13 @@ function changeVisitCount(delta) {
             </div>
         `;
         container.appendChild(div);
-        refreshIcons();
-        div.querySelector("input")?.focus();
-    } else {
-        if (container.lastElementChild) {
-            container.lastElementChild.remove();
-        }
     }
-
-    visitCount = newCount;
-    document.getElementById("v-count-display").innerText = visitCount;
+    container.classList.remove("hidden");
+    bottom.classList.remove("hidden");
+    refreshIcons();
+    setTimeout(() => {
+        container.querySelector("input")?.focus();
+    }, 100);
 }
 /* ==================== 페이지 초기화 ==================== */
 
@@ -910,10 +917,10 @@ function initializePage() {
 
     initFilterOptions();
     changeArCount(1);
-    changeVisitCount(1);
     initFirebaseListeners(); // ✅ Firebase 데이터 구독 시작
     refreshIcons();
 
 }
 
 document.addEventListener("DOMContentLoaded", initializePage);
+
