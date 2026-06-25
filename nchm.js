@@ -295,11 +295,49 @@ function togglePurpose(el) {
 }
 /* ==================== 팝업함수 ( AR) ==================== */
 function showArNotice() {
-    document.getElementById("ar-notice-modal").classList.remove("hidden");
-}
 
-function closeArNotice() {
-    document.getElementById("ar-notice-modal").classList.add("hidden");
+    document.getElementById("ar-notice-modal").classList.remove("hidden");
+
+    const btn = document.getElementById("arNoticeBtn");
+    const cover = document.getElementById("btnCover");
+    const text = document.getElementById("btnText");
+
+    btn.disabled = true;
+    btn.classList.add("cursor-not-allowed");
+
+    // 초기화
+    cover.style.transition = "none";
+    cover.style.width = "100%";
+
+    cover.offsetWidth;
+
+    // 흰색이 사라짐
+    cover.style.transition = "width 3s linear";
+    cover.style.width = "0%";
+
+    let sec = 3;
+
+    text.textContent = `확인했습니다 (${sec})`;
+
+    const timer = setInterval(() => {
+
+        sec--;
+
+        if (sec > 0) {
+
+            text.textContent = `확인했습니다 (${sec})`;
+
+        } else {
+
+            clearInterval(timer);
+
+            text.textContent = "확인했습니다 ✓";
+            btn.disabled = false;
+            btn.classList.remove("cursor-not-allowed");
+
+        }
+
+    },1000);
 }
 
 /* ==================== AR 예약 이용자 카드 ==================== */
