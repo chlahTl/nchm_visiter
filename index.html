@@ -8,7 +8,8 @@
 
     <!-- 외부 CDN 라이브러리 -->
     <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind CSS -->
-    <script src="https://unpkg.com/lucide@latest"></script> <!-- 아이콘 라이브러리 -->
+    <!-- [보안 수정] @latest 대신 버전을 고정하여 공급망(Supply-chain) 공격 표면을 줄임 -->
+    <script src="https://unpkg.com/lucide@0.469.0"></script> <!-- 아이콘 라이브러리 -->
 
     <!-- 분리한 CSS 파일 연결 -->
     <link rel="stylesheet" href="./nchm.css">
@@ -82,8 +83,6 @@
                     </div>
                 </div>
                 <div id="visit-user-container" class="space-y-4"></div>
-
-                <!-- 이용 목적 섹션 -->
 
                 <!-- 이용 목적 섹션 -->
                 <div class="bg-blue-50/50 rounded-3xl p-6 border border-blue-100">
@@ -253,10 +252,11 @@
     <div id="password-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
         <div class="bg-white w-full max-w-sm rounded-[32px] p-8 shadow-2xl animate-fadeIn text-center">
             <h3 class="text-xl font-bold text-slate-800 mb-6">관리자 인증</h3>
-            <input type="password" id="admin-password-input" maxlength="8" placeholder="••••" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-4 text-3xl text-center tracking-[1rem] focus:outline-none focus:border-slate-800 mb-6" onkeyup="if(event.key === 'Enter') verifyAdminPassword()">
+            <!-- [보안 수정] maxlength="8" → "64": 비밀번호 길이를 인위적으로 제한하지 않도록 변경 (Authentication 강화) -->
+            <input type="password" id="admin-password-input" maxlength="64" placeholder="••••" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-4 text-3xl text-center tracking-[1rem] focus:outline-none focus:border-slate-800 mb-6" onkeyup="if(event.key === 'Enter') verifyAdminPassword()">
             <div class="flex gap-3">
                 <button onclick="closePasswordModal()" class="flex-1 py-4 bg-slate-100 text-slate-500 font-bold rounded-2xl">취소</button>
-                <button onclick="verifyAdminPassword()" class="flex-[2] py-4 bg-slate-800 text-white font-bold rounded-2xl">확인</button>
+                <button id="admin-verify-btn" onclick="verifyAdminPassword()" class="flex-[2] py-4 bg-slate-800 text-white font-bold rounded-2xl">확인</button>
             </div>
         </div>
     </div>
@@ -307,5 +307,3 @@
     <script src="./nchm.js"></script>
 </body>
 </html>
-
-
