@@ -144,240 +144,12 @@ body.theme-admin { background-color: #f8fafc; }
 
 /* ==================== 관리자 통계 테이블 ==================== */
 
-/* 통계 테이블 컨테이너 */
 .stats-container {
     background: white;
     border-radius: 24px;
     border: 1px solid #e2e8f0;
     overflow: hidden;
     margin-top: 20px;
-}
-
-/* 테이블 가로 스크롤 영역 */
-.stats-table-wrapper { 
-    overflow-x: auto; 
-}
-
-/* 통계 테이블 */
-.stats-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    min-width: 1000px; 
-}
-
-.stats-table th, .stats-table td { 
-    border: 1px solid #f1f5f9; 
-    padding: 10px 4px; 
-    text-align: center; 
-    font-size: 12px;
-}
-
-/* 테이블 헤더 스타일 */
-.stats-table thead th { 
-    background-color: #f8fafc; 
-    color: #475569; 
-    font-weight: 700; 
-}
-
-/* 성별 헤더 크기 조정 */
-.stats-table .gender-header { 
-    font-size: 10px; 
-    padding: 4px; 
-}
-
-/* 성별 색상 구분 */
-.stats-table .male { color: #3b82f6; } /* 남성은 파란색 */
-.stats-table .female { color: #f43f5e; } /* 여성은 빨간색 */
-
-/* 카테고리 행 스타일 */
-.stats-table .category-row { 
-    background-color: #fcfdfe; 
-    font-weight: 600; 
-    color: #1e293b; 
-}
-
-/* 합계 열 스타일 (방문등록용) */
-.stats-table .sum-col { 
-    background-color: #f0f7ff; 
-    color: #2563eb; 
-    font-weight: 800; 
-}
-
-/* 합계 열 스타일 (AR예약용) */
-.stats-table .ar-sum-col { 
-    background-color: #f5f3ff; 
-    color: #6366f1; 
-    font-weight: 800; 
-}
-
-/* 전체 합계 열 스타일 */
-.stats-table .total-sum-col { 
-    background-color: #1e293b; 
-    color: white; 
-    font-weight: 800; 
-}
-
-/* 푸터(합계) 행 스타일 */
-.stats-table .footer-row { 
-    background-color: #1e293b; 
-    color: white; 
-    font-weight: 800; 
-}
-
-.stats-table .footer-row td { 
-    border-color: #334155; 
-}
-
-/* 최종 합계 - 방문등록 색상 */
-.stats-table .final-total-visit { 
-    background-color: #2563eb; 
-}
-
-/* 최종 합계 - AR예약 색상 */
-.stats-table .final-total-ar { 
-    background-color: #6366f1; 
-}
-
-/* ==================== 필터 칩 스타일 ==================== */
-
-/* 필터 버튼 기본 스타일 */
-.filter-chip {
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s;
-    border: 1px solid #e2e8f0;
-    background: white;
-    color: #64748b;
-}
-
-/* 필터 버튼 활성화 스타일 */
-.filter-chip.active {
-    background: #1e293b;
-    color: white;
-    border-color: #1e293b;
-}
-
-/* ==================== AR 예약 이용자 카드 ==================== */
-
-/* 이용자 정보 입력 카드 */
-.ar-user-card {
-    background-color: white;
-    border: 1px solid #f1f5f9;
-    border-radius: 24px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 16px;
-    position: relative;
-}
-
-/* 태블릿 이상 해상도에서 가로 배치 */
-@media (min-width: 640px) {
-    .ar-user-card {
-        flex-direction: row;
-        align-items: center;
-    }
-}
-
-/* ==================== 시간대 선택 버튼 ==================== */
-
-/* 예약 불가능 시간 스타일 */
-.time-slot-btn.disabled {
-    background-color: #f1f5f9 !important;
-    color: #94a3b8 !important;
-    cursor: not-allowed;
-    border-color: #e2e8f0 !important;
-    opacity: 0.6;
-}
-
-/* ==================== 관리자 셀렉트 박스 ==================== */
-
-/* 커스텀 셀렉트 드롭다운 */
-.admin-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 1rem;
-    padding-right: 1.5rem;
-}
-
-/* ==================== 검색 및 조회 버튼 ==================== */
-
-/* 조회 버튼 스타일 */
-.search-confirm-btn {
-    background-color: #475569;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* 조회 버튼 호버 스타일 */
-.search-confirm-btn:hover {
-    background-color: #1e293b;
-}
-
-/* ==================== 엑셀 다운로드 버튼 ==================== */
-
-/* 다운로드 버튼 스타일 */
-.excel-download-btn {
-    background-color: #166534; /* 초록색 */
-    color: white;
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-}
-
-/* 다운로드 버튼 호버 스타일 */
-.excel-download-btn:hover {
-    background-color: #14532d; /* 더 어두운 초록색 */
-    transform: translateY(-1px); /* 약간 위로 이동 */
-}
-
-/* ==================== 네비게이션 바 ==================== */
-
-/* 상단 네비게이션 바 */
-.navbar {
-    background-color: white;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 0.75rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky; /* 스크롤 시에도 상단 고정 */
-    top: 0;
-    z-index: 50;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    min-height: 80px;
-}
-
-/* 로고 링크 */
-.logo-link {
-    display: flex;
-    align-items: center;
-    height: 100%;
-}
-
-/* 로고 이미지 */
-.logo-img {
-    display: block;
-    height: 60px;
-    width: auto;
-    object-fit: contain;
 }
 
 .stats-table-wrapper { overflow-x: auto; }
@@ -388,8 +160,7 @@ body.theme-admin { background-color: #f8fafc; }
     min-width: 1000px;
 }
 
-.stats-table th,
-.stats-table td {
+.stats-table th, .stats-table td {
     border: 1px solid #f1f5f9;
     padding: 10px 4px;
     text-align: center;
@@ -409,6 +180,8 @@ body.theme-admin { background-color: #f8fafc; }
 .stats-table .final-total-visit { background-color: #2563eb; }
 .stats-table .final-total-ar { background-color: #6366f1; }
 
+/* ==================== 필터 칩 스타일 ==================== */
+
 .filter-chip {
     padding: 8px 16px;
     border-radius: 12px;
@@ -425,6 +198,8 @@ body.theme-admin { background-color: #f8fafc; }
     color: white;
     border-color: #1e293b;
 }
+
+/* ==================== AR 예약 이용자 카드 ==================== */
 
 .ar-user-card {
     background-color: white;
@@ -445,6 +220,8 @@ body.theme-admin { background-color: #f8fafc; }
     }
 }
 
+/* ==================== 시간대 선택 버튼 ==================== */
+
 .time-slot-btn.disabled {
     background-color: #f1f5f9 !important;
     color: #94a3b8 !important;
@@ -452,6 +229,8 @@ body.theme-admin { background-color: #f8fafc; }
     border-color: #e2e8f0 !important;
     opacity: 0.6;
 }
+
+/* ==================== 관리자 셀렉트 박스 ==================== */
 
 .admin-select {
     appearance: none;
@@ -461,6 +240,8 @@ body.theme-admin { background-color: #f8fafc; }
     background-size: 1rem;
     padding-right: 1.5rem;
 }
+
+/* ==================== 검색 및 조회 버튼 ==================== */
 
 .search-confirm-btn {
     background-color: #475569;
@@ -476,6 +257,8 @@ body.theme-admin { background-color: #f8fafc; }
 }
 
 .search-confirm-btn:hover { background-color: #1e293b; }
+
+/* ==================== 엑셀 다운로드 버튼 ==================== */
 
 .excel-download-btn {
     background-color: #166534;
@@ -494,6 +277,8 @@ body.theme-admin { background-color: #f8fafc; }
     background-color: #14532d;
     transform: translateY(-1px);
 }
+
+/* ==================== 네비게이션 바 ==================== */
 
 .navbar {
     background-color: white;
@@ -520,4 +305,12 @@ body.theme-admin { background-color: #f8fafc; }
     height: 60px;
     width: auto;
     object-fit: contain;
+}
+
+/* [보안 수정] 버튼 비활성화(전송 중) 상태 시각 표시 — Race Condition / Rate Limiting 대응 JS와 연동 */
+.submit-btn:disabled,
+#admin-verify-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
 }
